@@ -11,12 +11,16 @@ class CreateTalleresActividadesTable extends Migration
         Schema::create('talleres_actividades', function (Blueprint $table) {
             $table->id();
             $table->string('titulo');
+            $table->string('tipo_evento');
             $table->text('descripcion');
-            $table->date('fecha');
-            $table->string('ubicacion')->nullable();
-            $table->foreignId('madre_id')->nullable()->constrained('users')->onDelete('set null'); 
+            $table->dateTime('fecha_evento');
+            
+            $table->foreignId('nino_id')->nullable()->constrained('ninos')->onDelete('cascade');
+            $table->foreignId('madre_id')->nullable()->constrained('users')->onDelete('cascade'); 
+            
             $table->timestamps();
         });
+
     }
 
     public function down()

@@ -10,14 +10,16 @@ class HitoLogrado extends Model
 
     // Nombre de la tabla en la base de datos
     protected $table = 'hito_logrados';
-    
+
     protected $fillable = [
         'fecha_logro',
+        'observaciones',
         'nino_id',
         'hito_id',
+        'etapa_desarrollo_id'
     ];
 
-    // Relación: un hito logrado pertenece a un niño
+    // Relación
     
     public function nino()
     {
@@ -27,6 +29,11 @@ class HitoLogrado extends Model
     public function hito()
     {
         return $this->belongsTo(Hito::class, 'hito_id');
+    }
+
+    public function etapaDesarrollo()
+    {
+        return $this->belongsTo(EtapaDesarrollo::class, 'etapa_desarrollo_id');
     }
 
 }

@@ -15,6 +15,10 @@ class EtapaDesarrollo extends Model
 
     // Relaciones
 
+    public function ninos()
+    {
+        return $this->hasMany(Nino::class, 'etapa_desarrollo_id');
+    }
 
     public function hitos()
     {
@@ -26,9 +30,14 @@ class EtapaDesarrollo extends Model
         return $this->hasMany(EvaluacionDesarrollo::class, 'etapa_desarrollo_id');
     }
 
-    public function ninos()
+    public function fotoNinos()
     {
-        return $this->hasMany(Nino::class, 'etapa_desarrollo_id');
+        return $this->hasMany(FotoNino::class, 'etapa_desarrollo_id');
+    }
+
+    public function hitoLogrados()
+    {
+        return $this->hasMany(HitoLogrado::class, 'etapa_desarrollo_id');
     }
 
 }

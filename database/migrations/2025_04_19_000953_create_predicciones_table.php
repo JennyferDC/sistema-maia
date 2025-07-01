@@ -11,13 +11,17 @@ class CreatePrediccionesTable extends Migration
         Schema::create('predicciones', function (Blueprint $table) {
             $table->id();
             $table->string('tipo'); 
-            $table->text('contenido')->nullable(); 
+            $table->text('resultado')->nullable(); 
             $table->float('probabilidad'); 
-            $table->text('fuente_datos')->nullable(); 
+            $table->dateTime('fecha_prediccion');
+
             $table->foreignId('nino_id')->constrained('ninos')->onDelete('cascade');
-            $table->date('fecha'); // Fecha de predicción
+            $table->foreignId('registro_observacion_salud_id')->nullable()->constrained('registros_observacion_salud')->onDelete('set null');
+            $table->foreignId('diagnostico_medico_id')->nullable()->constrained('diagnosticos_medicos')->onDelete('set null');
+
             $table->timestamps();
         });
+        
     }
 
     public function down()

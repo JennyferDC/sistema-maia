@@ -13,11 +13,12 @@ class Prediccion extends Model
 
     protected $fillable = [
         'tipo',
-        'contenido',
+        'resultado',
         'probabilidad',
-        'fuente_datos',
+        'fecha_prediccion',
         'nino_id',
-        'fecha',
+        'registro_observacion_salud_id',
+        'diagnostico_medico_id'
     ];
 
     // Relaciones
@@ -25,6 +26,21 @@ class Prediccion extends Model
     public function nino()
     {
         return $this->belongsTo(Nino::class, 'nino_id');
+    }
+
+    public function observacionSalud()
+    {
+        return $this->belongsTo(RegistroObservacionSalud::class, 'registro_observacion_salud_id');
+    }
+
+    public function diagnosticoMedico()
+    {
+        return $this->belongsTo(DiagnosticoMedico::class, 'diagnostico_medico_id');
+    }
+
+    public function alertas()
+    {
+        return $this->hasMany(Alerta::class, 'prediccion_id');
     }
 
     public function recomendaciones()

@@ -7,16 +7,18 @@ use App\Models\User;
 use App\Models\EtapaDesarrollo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 
 
 class NinoController extends Controller
-{    
-    public function index() {
+{
 
+    public function index()
+    {
         $ninos = Nino::with(['madre', 'etapaDesarrollo'])
-            ->where('madre_id', Auth::id()) // ← FILTRA SOLO LOS NIÑOS DE LA MADRE AUTENTICADA
+            ->where('madre_id', Auth::id())  // ← FILTRA SOLO LOS NIÑOS DE LA MADRE AUTENTICADA
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -25,68 +27,61 @@ class NinoController extends Controller
         ]);
     }
 
-    public function create() {
-
-    if (Auth::user()->rol !== 'madre') {  // Valida que el usuario es madre
-        abort(403, 'No autorizado');
-    }
+    public function create()
+    {
+        if (Auth::user()->rol !== 'madre') { // VALIDA QUE EL USUARIO ES LA MADRE
+            abort(403, 'No autorizado');
+        }
 
         $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
         $madreId = Auth::id();
 
         return Inertia::render('Ninos/Create', [
             'etapas' => $etapas,
-            'madreId' => $madreId // <-- lo pasas al frontend
+            'madreId' => $madreId
         ]);
     }
 
-    public function store(Request $request) {
-
+    public function store(Request $request)
+    {
         $data = $request->validate([
             'nombre' => ['required', 'string', 'max:255'],
-            'semanas_prematuro' => ['required', 'integer', 'min:0'],
-            'fecha_nacimiento' => ['nullable', 'date'],
+            'es_prematuro' => ['required', 'boolean'],
+            'semanas_prematuro' => ['required_if:es_prematuro,true', 'nullable', 'integer', 'min:0'],
+            'fecha_nacimiento' => ['required', 'date'],
             'sexo' => ['required', 'in:masculino,femenino'],
-            'peso_nacimiento' => ['required', 'numeric', 'min:0'],
-            'talla_nacimiento' => ['required', 'numeric', 'min:0'],
+            'peso' => ['required', 'numeric', 'min:0'],
+            'talla' => ['required', 'numeric', 'min:0'],
         ]);
-    
+
         $data['madre_id'] = Auth::id();
-    
-        $edadMeses = 0;
-    
-        if (!empty($data['fecha_nacimiento'])) {
-            $fechaNacimiento = new DateTime($data['fecha_nacimiento']);
-            $fechaActual = new DateTime(); // Fecha actual
-    
-            $intervalo = $fechaNacimiento->diff($fechaActual);
-            $edadMeses = ($intervalo->y * 12) + $intervalo->m;
-        }
-    
+
+        $edadMeses = Carbon::parse($data['fecha_nacimiento'])->diffInMonths(Carbon::now());
+
         if ($edadMeses <= 1) {
-            $data['etapa_desarrollo_id'] = 1; // Recién Nacido
+            $data['etapa_desarrollo_id'] = 1;
         } elseif ($edadMeses <= 12) {
-            $data['etapa_desarrollo_id'] = 2; // Lactante
+            $data['etapa_desarrollo_id'] = 2;
         } elseif ($edadMeses <= 24) {
-            $data['etapa_desarrollo_id'] = 3; // Primera Infancia
+            $data['etapa_desarrollo_id'] = 3;
         } else {
-            $data['etapa_desarrollo_id'] = 4; // Segunda Infancia
+            $data['etapa_desarrollo_id'] = 4;
         }
-    
+
         Nino::create($data);
-    
-        return Redirect::route('ninos.index')
-            ->with('success', 'Niño creado exitosamente.');
+
+        return Redirect::route('ninos.index')->with('success', 'Niño creado exitosamente.');
     }
 
-    public function show(Nino $nino) {
+    public function show(Nino $nino)
+    {
         $nino->load([
             'madre',
             'etapaDesarrollo',
             'fotos',
             'evaluaciones',
             'observacionesSalud',
-            'diagnosticos',
+            'diagnosticoMedico',
             'alertas',
             'predicciones',
             'recomendaciones'
@@ -97,44 +92,30 @@ class NinoController extends Controller
         ]);
     }
 
-    public function edit(Nino $nino) {
-
-        $madres = User::where('id', Auth::id())
-            ->select('id', 'name as label') // label para el <select>
-            ->get();
-
-        $etapas = EtapaDesarrollo::select('id', 'nombre as label')->get();
+    public function edit(Nino $nino)
+    {
+        $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
 
         return Inertia::render('Ninos/Edit', [
             'nino' => $nino,
-            'madres' => $madres,
             'etapas' => $etapas
         ]);
     }
 
-    
-    public function update(Request $request, Nino $nino) {
-    
+    public function update(Request $request, Nino $nino)
+    {
         $data = $request->validate([
             'nombre' => ['required', 'string', 'max:255'],
-            'semanas_prematuro' => ['required', 'integer', 'min:0'],
-            'fecha_nacimiento' => ['nullable', 'date'],
+            'es_prematuro' => ['required', 'boolean'],
+            'semanas_prematuro' => ['required_if:es_prematuro,true', 'nullable', 'integer', 'min:0'],
+            'fecha_nacimiento' => ['required', 'date'],
             'sexo' => ['required', 'in:masculino,femenino'],
-            'peso_nacimiento' => ['required', 'numeric', 'min:0'],
-            'talla_nacimiento' => ['required', 'numeric', 'min:0'],
-            'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'], // se recalcula si cambia fecha
+            'peso' => ['required', 'numeric', 'min:0'],
+            'talla' => ['required', 'numeric', 'min:0'],
         ]);
 
-        // Recalcular etapa si cambia fecha de nacimiento
         if ($request->fecha_nacimiento !== $nino->fecha_nacimiento) {
-            $edadMeses = 0;
-
-            if (!empty($data['fecha_nacimiento'])) {
-                $fechaNacimiento = new \DateTime($data['fecha_nacimiento']);
-                $fechaActual = new \DateTime();
-                $intervalo = $fechaNacimiento->diff($fechaActual);
-                $edadMeses = ($intervalo->y * 12) + $intervalo->m;
-            }
+            $edadMeses = Carbon::parse($data['fecha_nacimiento'])->diffInMonths(Carbon::now());
 
             if ($edadMeses <= 1) {
                 $data['etapa_desarrollo_id'] = 1;
@@ -147,17 +128,20 @@ class NinoController extends Controller
             }
         }
 
-    $nino->update($data);
-        return Redirect::route('ninos.index')
-        ->with('success', 'Niño actualizado correctamente.');
+        $nino->update($data);
+
+        return Redirect::route('ninos.index')->with('success', 'Niño actualizado correctamente.');
     }
 
     public function destroy(Nino $nino)
     {
+        if ($nino->madre_id !== Auth::id()) {
+            abort(403, 'No autorizado');
+        }
+
         $nino->delete();
 
-        return Redirect::route('ninos.index')
-            ->with('success', 'Niño eliminado correctamente.');
+        return Redirect::route('ninos.index')->with('success', 'Niño eliminado correctamente.');
     }
-
+    
 }

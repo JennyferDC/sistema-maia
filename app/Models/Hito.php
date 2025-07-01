@@ -11,6 +11,7 @@ class Hito extends Model
     protected $table = 'hitos'; // Nombre de tabla
 
     protected $fillable = [
+        
         'nombre_hito',
         'etapa_desarrollo_id',
     ];
@@ -20,7 +21,7 @@ class Hito extends Model
         return $this->belongsTo(EtapaDesarrollo::class, 'etapa_desarrollo_id');
     }
 
-    public function hitosLogrados()
+    public function hitoLogrados()
     {
         return $this->hasMany(HitoLogrado::class, 'hito_id');
     }

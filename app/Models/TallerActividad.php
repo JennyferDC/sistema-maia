@@ -13,10 +13,11 @@ class TallerActividad extends Model
 
     protected $fillable = [
         'titulo',
+        'tipo_evento',
         'descripcion',
-        'fecha',
-        'ubicacion',
-        'madre_id',
+        'fecha_evento',
+        'nino_id',
+        'madre_id'
     ];
 
     // Relaciones
@@ -24,5 +25,15 @@ class TallerActividad extends Model
     public function madre()
     {
         return $this->belongsTo(User::class, 'madre_id');
+    }
+
+    public function nino()
+    {
+        return $this->belongsTo(Nino::class, 'nino_id');
+    }
+
+    public function notificaciones()
+    {
+        return $this->hasMany(Notificacion::class, 'taller_actividad_id');
     }
 }

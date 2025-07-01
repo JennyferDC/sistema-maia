@@ -12,7 +12,7 @@ class DiagnosticoMedico extends Model
     protected $table = 'diagnosticos_medicos';
 
     protected $fillable = [
-        'diagnostico',
+        'tipo_diagnostico',
         'descripcion',
         'fecha_inicio',
         'fecha_fin',
@@ -24,5 +24,15 @@ class DiagnosticoMedico extends Model
     public function nino()
     {
         return $this->belongsTo(Nino::class, 'nino_id');
+    }
+
+    public function predicciones()
+    {
+        return $this->hasMany(Prediccion::class, 'diagnostico_medico_id');
+    }
+
+    public function recomendaciones()
+    {
+        return $this->hasMany(Recomendacion::class, 'diagnostico_medico_id');
     }
 }

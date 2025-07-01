@@ -11,10 +11,12 @@ class CreateFotoNinosTable extends Migration
         Schema::create('foto_ninos', function (Blueprint $table) {
             $table->id();
             $table->string('ruta_foto');
+            $table->dateTime('fecha_subida');
             $table->string('descripcion')->nullable(); 
-            $table->date('fecha')->nullable(); 
+
             $table->foreignId('nino_id')->constrained('ninos')->onDelete('cascade');
             $table->foreignId('etapa_desarrollo_id')->constrained('etapas_desarrollo')->onDelete('cascade');
+            
             $table->timestamps();
         });
     }

@@ -13,8 +13,8 @@ class RegistroObservacionSalud extends Model
 
     protected $fillable = [
         'tipo_observacion',
-        'descripcion',
-        'fecha',
+        'observaciones',
+        'fecha_registro',
         'nino_id',
     ];
 
@@ -23,5 +23,20 @@ class RegistroObservacionSalud extends Model
     public function nino()
     {
         return $this->belongsTo(Nino::class, 'nino_id');
+    }
+
+    public function alertas()
+    {
+        return $this->hasMany(Alerta::class, 'registro_observacion_salud_id');
+    }
+
+    public function predicciones()
+    {
+        return $this->hasMany(Prediccion::class, 'registro_observacion_salud_id');
+    }
+
+    public function recomendaciones()
+    {
+        return $this->hasMany(Recomendacion::class, 'registro_observacion_salud_id');
     }
 }

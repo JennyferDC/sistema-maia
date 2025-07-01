@@ -11,11 +11,14 @@ class CreateRegistrosObservacionSaludTable extends Migration
         Schema::create('registros_observacion_salud', function (Blueprint $table) {
             $table->id();
             $table->string('tipo_observacion'); // Ej: 'fiebre', 'vómito', etc.
-            $table->text('descripcion')->nullable();
-            $table->date('fecha');
+            $table->text('observaciones')->nullable();
+            $table->date('fecha_registro');
+
             $table->foreignId('nino_id')->constrained('ninos')->onDelete('cascade');
+            
             $table->timestamps();
         });
+
     }
 
     public function down()

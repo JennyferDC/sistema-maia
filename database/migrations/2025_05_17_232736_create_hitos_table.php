@@ -12,7 +12,9 @@ class CreateHitosTable extends Migration
         Schema::create('hitos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_hito');
+
             $table->foreignId('etapa_desarrollo_id')->constrained('etapas_desarrollo')->onDelete('cascade');
+            
             $table->timestamps();
         });
     }

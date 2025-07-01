@@ -10,11 +10,13 @@ class CreateDiagnosticosMedicosTable extends Migration
     {
         Schema::create('diagnosticos_medicos', function (Blueprint $table) {
             $table->id();
-            $table->string('diagnostico');
+            $table->string('tipo_diagnostico');
             $table->text('descripcion')->nullable();
             $table->date('fecha_inicio');
             $table->date('fecha_fin')->nullable(); // si es null, el diagnóstico sigue activo o es permanente
+            
             $table->foreignId('nino_id')->constrained('ninos')->onDelete('cascade');
+            
             $table->timestamps();
         });
     }

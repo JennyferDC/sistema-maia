@@ -13,11 +13,12 @@ class Recomendacion extends Model
 
     protected $fillable = [
         'contenido',
+        'fecha_generada',
         'nino_id',
         'registro_observacion_salud_id',
-        'prediccion_id',
         'diagnostico_medico_id',
-        'alerta_id',
+        'prediccion_id',
+        'alerta_id'
     ];
 
     // Relaciones

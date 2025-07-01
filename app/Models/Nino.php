@@ -7,22 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Nino extends Model
 {
+    
     use HasFactory;
 
     protected $table = 'ninos';
 
     protected $fillable = [
         'nombre',
+        'es_prematuro',
         'semanas_prematuro',
         'fecha_nacimiento',
         'sexo',
-        'peso_nacimiento',
-        'talla_nacimiento',
+        'peso',
+        'talla',
         'madre_id',
-        'etapa_desarrollo_id', // Asigna automáticamente
+        'etapa_desarrollo_id'
     ];
 
     // Relaciones
+
     public function madre()
     {
         return $this->belongsTo(User::class, 'madre_id');
@@ -33,14 +36,9 @@ class Nino extends Model
         return $this->belongsTo(EtapaDesarrollo::class, 'etapa_desarrollo_id');
     }
 
-    public function hitosLogrados()
+    public function hitoLogrados()
     {
         return $this->hasMany(HitoLogrado::class, 'nino_id');
-    }
-
-    public function diagnosticoNacimiento()
-    {
-        return $this->belongsTo(DiagnosticoMedico::class, 'diagnostico_nacimiento_id');
     }
 
     public function fotos()
@@ -58,7 +56,7 @@ class Nino extends Model
         return $this->hasMany(RegistroObservacionSalud::class, 'nino_id');
     }
 
-    public function diagnosticos()
+    public function diagnosticoMedico()
     {
         return $this->hasMany(DiagnosticoMedico::class, 'nino_id');
     }
@@ -78,8 +76,8 @@ class Nino extends Model
         return $this->hasMany(Recomendacion::class, 'nino_id');
     }
 
-    public function talleres()
+    public function tallerActividad()
     {
-        return $this->hasMany(TallerActividad::class, 'madre_id');
+        return $this->hasMany(TallerActividad::class, 'nino_id');
     }
 }

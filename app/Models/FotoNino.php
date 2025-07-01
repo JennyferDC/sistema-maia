@@ -13,8 +13,8 @@ class FotoNino extends Model
 
     protected $fillable = [
         'ruta_foto',
+        'fecha_subida',
         'descripcion',
-        'fecha',
         'nino_id',
         'etapa_desarrollo_id',
     ];
@@ -30,4 +30,5 @@ class FotoNino extends Model
     {
         return $this->belongsTo(EtapaDesarrollo::class, 'etapa_desarrollo_id');
     }
+    
 }

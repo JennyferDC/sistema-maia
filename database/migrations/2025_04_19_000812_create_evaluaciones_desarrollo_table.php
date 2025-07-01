@@ -12,14 +12,18 @@ class CreateEvaluacionesDesarrolloTable extends Migration
         Schema::create('evaluaciones_desarrollo', function (Blueprint $table) {
             
             $table->id();
-            $table->date('fecha');
+            $table->dateTime('fecha_evaluacion');
             $table->float('peso');
             $table->float('talla');
-            $table->foreignId('nino_id')->constrained('ninos')->onDelete('cascade');
+            $table->string('comentario_madre')->nullable();
+
             $table->foreignId('etapa_desarrollo_id')->constrained('etapas_desarrollo')->onDelete('cascade');
+            $table->foreignId('nino_id')->constrained('ninos')->onDelete('cascade');
+            
             $table->timestamps();
 
         });
+        
     }
 
     public function down()

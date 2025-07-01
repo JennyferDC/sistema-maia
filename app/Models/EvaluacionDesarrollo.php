@@ -12,13 +12,16 @@ class EvaluacionDesarrollo extends Model
     protected $table = 'evaluaciones_desarrollo'; // Nombre de tabla
 
     protected $fillable = [
-        'fecha',
-        'peso',
-        'talla',
         'nino_id',
         'etapa_desarrollo_id',
+        'fecha_evaluacion',
+        'peso',
+        'talla',
+        'comentario_madre',
     ];
-   
+    
+    // Relación con Niño
+
     public function nino()
     {
         return $this->belongsTo(Nino::class, 'nino_id');
