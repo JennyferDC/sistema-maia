@@ -10,21 +10,22 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Primero crea los usuarios (madres)
-        User::factory(10)->create();
-        
-        User::factory()->create([
-            'name' => 'Test User',
-            'apellido' => 'Un apellido',
-            'email' => 'test@example.com',
+        // 1. Crear usuarios (madres) usando el seeder personalizado
+        $this->call([
+            UserSeeder::class,
         ]);
 
-        // 2. Luego las etapas de desarrollo
+        // 2. Crear etapas de desarrollo
         $this->call([
             EtapasDesarrolloSeeder::class,
         ]);
 
-        // 3. Finalmente los niños (que dependen de los anteriores)
+        // 3. Crear hitos (relacionados con las etapas)
+        $this->call([
+            HitoSeeder::class,
+        ]);
+
+        // 4. Crear niños (relacionados con usuarios y etapas)
         $this->call([
             NinoSeeder::class,
         ]);

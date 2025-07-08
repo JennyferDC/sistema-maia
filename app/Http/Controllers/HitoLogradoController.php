@@ -18,10 +18,6 @@ class HitoLogradoController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $hitos = Hito::where('etapa_desarrollo_id', $nino->etapa_desarrollo_id)
             ->select('id', 'nombre_hito')
             ->get();
@@ -39,10 +35,6 @@ class HitoLogradoController extends Controller
 
     public function create(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $hitos = Hito::where('etapa_desarrollo_id', $nino->etapa_desarrollo_id)
             ->select('id', 'nombre_hito')
             ->get();
@@ -55,10 +47,6 @@ class HitoLogradoController extends Controller
 
     public function store(Request $request, Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'logros'                       => 'required|array',
             'logros.*.hito_id'             => 'required|exists:hitos,id',
@@ -86,10 +74,6 @@ class HitoLogradoController extends Controller
 
     public function destroy(Nino $nino, HitoLogrado $hitoLogrado)
     {
-        if ($nino->madre_id !== Auth::id() || $hitoLogrado->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $hitoLogrado->delete();
 
         return Redirect::route('ninos.hitos.index', $nino)

@@ -1,5 +1,6 @@
 <?php
-use App\Http\Controllers\Controller;
+
+namespace App\Http\Controllers;
 
 use App\Models\EtapaDesarrollo;
 use App\Models\Nino;
@@ -13,17 +14,13 @@ class EtapaDesarrolloController extends Controller
     
     public function index()
     {
-        if (Auth::user()->rol !== 'madre') {
-            abort(403, 'No autorizado');
-        }
-
         $etapas = EtapaDesarrollo::with('hitos')->orderBy('id')->get();
 
         $ninos = Auth::user()->ninos()->with('hitoLogrados')
             ->select('id', 'nombre')
             ->get();
 
-        return Inertia::render('EtapasDesarrollo/Index', [
+        return Inertia::render('Etapas/Index', [
             'etapas' => $etapas,
             'ninos' => $ninos,
         ]);
@@ -31,19 +28,11 @@ class EtapaDesarrolloController extends Controller
 
     public function create()
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden crear etapas.');
-        }
-
-        return Inertia::render('EtapasDesarrollo/Create');
+        return Inertia::render('Etapas/Create');
     }
 
     public function store(Request $request)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden guardar etapas.');
-        }
-
         $data = $request->validate([
             'nombre_etapa' => ['required', 'string', 'max:255'],
         ]);
@@ -56,34 +45,23 @@ class EtapaDesarrolloController extends Controller
 
     public function show(EtapaDesarrollo $etapaDesarrollo)
     {
-        if (!in_array(Auth::user()->rol, ['madre', 'admin'])) {
-            abort(403, 'No autorizado.');
-        }
 
         $etapaDesarrollo->load(['ninos', 'evaluaciones', 'hitos']);
 
-        return Inertia::render('EtapasDesarrollo/Show', [
+        return Inertia::render('Etapas/Show', [
             'etapa' => $etapaDesarrollo,
         ]);
     }
 
     public function edit(EtapaDesarrollo $etapaDesarrollo)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden editar etapas.');
-        }
-
-        return Inertia::render('EtapasDesarrollo/Edit', [
+        return Inertia::render('Etapas/Edit', [
             'etapa' => $etapaDesarrollo,
         ]);
     }
 
     public function update(Request $request, EtapaDesarrollo $etapaDesarrollo)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo administradores pueden actualizar etapas');
-        }
-
         $data = $request->validate([
             'nombre_etapa' => ['required', 'string', 'max:255'],
         ]);
@@ -96,10 +74,6 @@ class EtapaDesarrolloController extends Controller
 
     public function destroy(EtapaDesarrollo $etapaDesarrollo)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo administradores pueden eliminar etapas');
-        }
-
         $etapaDesarrollo->delete();
 
         return Redirect::route('etapas_desarrollo.index')
@@ -114,9 +88,21 @@ class EtapaDesarrolloController extends Controller
             $query->where('nino_id', $nino->id);
         }])->orderBy('id')->get();
 
-        return Inertia::render('EtapasDesarrollo/Evaluaciones', [
+        return Inertia::render('Etapas/Evaluaciones', [
             'nino' => $nino,
             'etapas' => $etapas,
         ]);
     }
+
+    public function etapasPorNino(Nino $nino)
+    {
+    $etapas = EtapaDesarrollo::with('hitos')->orderBy('id')->get();
+
+    return Inertia::render('Etapas/Index', [
+        'nino' => $nino,
+        'etapas' => $etapas,
+    ]);
+    
+   }
+   
 }

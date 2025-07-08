@@ -15,10 +15,6 @@ class RegistroObservacionController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $registros = RegistroObservacionSalud::where('nino_id', $nino->id)
             ->orderBy('fecha_registro', 'desc')
             ->paginate(10);
@@ -31,10 +27,6 @@ class RegistroObservacionController extends Controller
 
     public function create(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         return Inertia::render('RegistrosObservacion/Create', [
             'nino' => $nino->only(['id', 'nombre'])
         ]);
@@ -42,10 +34,6 @@ class RegistroObservacionController extends Controller
 
     public function store(Request $request, Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'tipo_observacion' => 'required|string|max:255',
             'observaciones' => 'nullable|string',
@@ -62,10 +50,6 @@ class RegistroObservacionController extends Controller
 
     public function destroy(Nino $nino, RegistroObservacionSalud $registro)
     {
-        if ($nino->madre_id !== Auth::id() || $registro->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $registro->delete();
 
         return Redirect::route('ninos.registros_observacion.index', $nino)

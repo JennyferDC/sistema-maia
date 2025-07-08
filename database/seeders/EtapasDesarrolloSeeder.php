@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; // ¡Falta esta línea!
+use Illuminate\Support\Facades\DB; 
 
 class EtapasDesarrolloSeeder extends Seeder
 {

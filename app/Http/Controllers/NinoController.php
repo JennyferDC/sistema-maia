@@ -29,9 +29,9 @@ class NinoController extends Controller
 
     public function create()
     {
-        if (Auth::user()->rol !== 'madre') { // VALIDA QUE EL USUARIO ES LA MADRE
-            abort(403, 'No autorizado');
-        }
+        // if (Auth::user()->rol !== 'madre') { // VALIDA QUE EL USUARIO ES LA MADRE
+        //     abort(403, 'No autorizado');
+        // }
 
         $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
         $madreId = Auth::id();
@@ -135,9 +135,9 @@ class NinoController extends Controller
 
     public function destroy(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
+        // if ($nino->madre_id !== Auth::id()) {
+        //     abort(403, 'No autorizado');
+        // }
 
         $nino->delete();
 

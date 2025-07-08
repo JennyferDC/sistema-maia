@@ -14,11 +14,6 @@ class HitoController extends Controller
 {
     public function index()
     {
-        // Solo accesible para admin o madre
-        if (!in_array(Auth::user()->rol, ['admin', 'madre'])) {
-            abort(403, 'No autorizado');
-        }
-
         $hitos = Hito::with('etapaDesarrollo:id,nombre_etapa')
             ->orderBy('etapa_desarrollo_id')
             ->orderBy('nombre_hito')
@@ -31,10 +26,6 @@ class HitoController extends Controller
 
     public function create()
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden crear hitos.');
-        }
-
         $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
 
         return Inertia::render('Hitos/Create', [
@@ -44,10 +35,6 @@ class HitoController extends Controller
 
     public function store(Request $request)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden registrar hitos.');
-        }
-
         $data = $request->validate([
             'nombre_hito'         => ['required', 'string', 'max:255'],
             'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'],
@@ -61,10 +48,6 @@ class HitoController extends Controller
 
     public function show(Hito $hito)
     {
-        if (!in_array(Auth::user()->rol, ['admin', 'madre'])) {
-            abort(403, 'No autorizado');
-        }
-
         $hito->load('etapaDesarrollo:id,nombre_etapa');
 
         return Inertia::render('Hitos/Show', [
@@ -74,10 +57,6 @@ class HitoController extends Controller
 
     public function edit(Hito $hito)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden editar hitos.');
-        }
-
         $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
 
         return Inertia::render('Hitos/Edit', [
@@ -88,10 +67,6 @@ class HitoController extends Controller
 
     public function update(Request $request, Hito $hito)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden actualizar hitos.');
-        }
-
         $data = $request->validate([
             'nombre_hito'         => ['required', 'string', 'max:255'],
             'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'],
@@ -105,10 +80,6 @@ class HitoController extends Controller
 
     public function destroy(Hito $hito)
     {
-        if (Auth::user()->rol !== 'admin') {
-            abort(403, 'Solo los administradores pueden eliminar hitos.');
-        }
-
         $hito->delete();
 
         return Redirect::route('hitos.index')

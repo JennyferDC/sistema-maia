@@ -16,10 +16,6 @@ class FotoNinoController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $fotos = FotoNino::where('nino_id', $nino->id)
             ->with('etapaDesarrollo:id,nombre_etapa')
             ->orderBy('fecha_subida', 'desc')
@@ -33,10 +29,6 @@ class FotoNinoController extends Controller
 
     public function create(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
 
         return Inertia::render('FotoNinos/Create', [
@@ -47,10 +39,6 @@ class FotoNinoController extends Controller
 
     public function store(Request $request, Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'imagen'              => ['required', 'image', 'max:2048'],
             'descripcion'         => ['nullable', 'string', 'max:255'],
@@ -74,10 +62,6 @@ class FotoNinoController extends Controller
 
     public function show(Nino $nino, FotoNino $fotoNino)
     {
-        if ($nino->madre_id !== Auth::id() || $fotoNino->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         return Inertia::render('FotoNinos/Show', [
             'foto' => $fotoNino->load('etapaDesarrollo:id,nombre_etapa'),
             'nino' => $nino->only(['id', 'nombre']),
@@ -86,10 +70,6 @@ class FotoNinoController extends Controller
 
     public function update(Request $request, Nino $nino, FotoNino $fotoNino)
     {
-        if ($nino->madre_id !== Auth::id() || $fotoNino->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'descripcion'         => ['nullable', 'string', 'max:255'],
             'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'],
@@ -103,10 +83,6 @@ class FotoNinoController extends Controller
 
     public function destroy(Nino $nino, FotoNino $fotoNino)
     {
-        if ($nino->madre_id !== Auth::id() || $fotoNino->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         if ($fotoNino->ruta_foto) {
             Storage::delete(str_replace('/storage/', 'public/', $fotoNino->ruta_foto));
         }

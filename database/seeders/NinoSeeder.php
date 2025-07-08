@@ -31,8 +31,8 @@ class NinoSeeder extends Seeder
                 'semanas_prematuro' => rand(28, 36),
                 'fecha_nacimiento' => now()->subDays(rand(1, 365))->format('Y-m-d'),                
                 'sexo' => ['masculino', 'femenino'][rand(0,1)],
-                'peso_nacimiento' => rand(2500, 4000) / 1000, // peso en kg
-                'talla_nacimiento' => rand(45, 55), // talla en cm
+                'peso' => rand(2500, 4000) / 1000, // peso en kg
+                'talla' => rand(45, 55), // talla en cm
                 'madre_id' => $madres[array_rand($madres)],
                 'etapa_desarrollo_id' => $etapas[array_rand($etapas)],
             ]);

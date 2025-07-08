@@ -14,10 +14,6 @@ class RecomendacionController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $recomendaciones = Recomendacion::where('nino_id', $nino->id)
             ->orderBy('fecha_generada', 'desc')
             ->paginate(10);
@@ -30,10 +26,6 @@ class RecomendacionController extends Controller
 
     public function show(Nino $nino, Recomendacion $recomendacion)
     {
-        if ($nino->madre_id !== Auth::id() || $recomendacion->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         return Inertia::render('Recomendaciones/Show', [
             'nino' => $nino->only(['id', 'nombre']),
             'recomendacion' => $recomendacion
@@ -62,10 +54,6 @@ class RecomendacionController extends Controller
 
     public function destroy(Nino $nino, Recomendacion $recomendacion)
     {
-        if ($nino->madre_id !== Auth::id() || $recomendacion->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $recomendacion->delete();
 
         return Redirect::route('ninos.recomendaciones.index', $nino)

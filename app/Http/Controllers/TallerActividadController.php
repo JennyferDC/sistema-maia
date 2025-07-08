@@ -14,10 +14,6 @@ class TallerActividadController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $actividades = TallerActividad::where('nino_id', $nino->id)
             ->orderBy('fecha_evento', 'desc')
             ->paginate(10);
@@ -30,10 +26,6 @@ class TallerActividadController extends Controller
 
     public function create(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         return Inertia::render('TalleresActividades/Create', [
             'nino' => $nino->only(['id', 'nombre'])
         ]);
@@ -41,10 +33,6 @@ class TallerActividadController extends Controller
 
     public function store(Request $request, Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'titulo' => 'required|string|max:255',
             'tipo_evento' => 'required|string|max:255',
@@ -63,10 +51,6 @@ class TallerActividadController extends Controller
 
     public function destroy(Nino $nino, TallerActividad $actividad)
     {
-        if ($nino->madre_id !== Auth::id() || $actividad->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $actividad->delete();
 
         return Redirect::route('ninos.talleres.index', $nino)

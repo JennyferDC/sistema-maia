@@ -14,10 +14,6 @@ class EvaluacionDesarrolloController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $evaluaciones = EvaluacionDesarrollo::where('nino_id', $nino->id)
             ->with('etapaDesarrollo:id,nombre_etapa')
             ->orderBy('fecha_evaluacion', 'desc')
@@ -40,10 +36,6 @@ class EvaluacionDesarrolloController extends Controller
 
     public function create(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $etapas = EtapaDesarrollo::select('id', 'nombre_etapa as label')->get();
 
         return Inertia::render('Evaluaciones/Create', [
@@ -54,10 +46,6 @@ class EvaluacionDesarrolloController extends Controller
 
     public function store(Request $request, Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'],
             'fecha_evaluacion'    => ['required', 'date'],
@@ -76,10 +64,6 @@ class EvaluacionDesarrolloController extends Controller
 
     public function show(Nino $nino, EvaluacionDesarrollo $evaluacion)
     {
-        if ($nino->madre_id !== Auth::id() || $evaluacion->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $evaluacion->load('etapaDesarrollo:id,nombre_etapa');
 
         return Inertia::render('Evaluaciones/Show', [
@@ -90,10 +74,6 @@ class EvaluacionDesarrolloController extends Controller
 
     public function destroy(Nino $nino, EvaluacionDesarrollo $evaluacion)
     {
-        if ($nino->madre_id !== Auth::id() || $evaluacion->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $evaluacion->delete();
 
         return Redirect::route('ninos.evaluaciones.index', $nino)

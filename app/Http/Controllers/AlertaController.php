@@ -16,10 +16,6 @@ class AlertaController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $alertas = Alerta::where('nino_id', $nino->id)
             ->with(['registroObservacionSalud:id,fecha', 'prediccion:id,tipo'])
             ->orderBy('fecha_generada', 'desc')
@@ -33,10 +29,6 @@ class AlertaController extends Controller
 
     public function create(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $observaciones = RegistroObservacionSalud::where('nino_id', $nino->id)
             ->select('id', 'fecha as label')
             ->get();
@@ -54,10 +46,6 @@ class AlertaController extends Controller
 
     public function store(Request $request, Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'tipo_alerta'                  => ['required', 'string', 'max:255'],
             'descripcion'                  => ['nullable', 'string', 'max:255'],
@@ -77,10 +65,6 @@ class AlertaController extends Controller
 
     public function show(Nino $nino, Alerta $alerta)
     {
-        if ($nino->madre_id !== Auth::id() || $alerta->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $alerta->load(['registroObservacionSalud:id,fecha', 'prediccion:id,tipo']);
 
         return Inertia::render('Alertas/Show', [
@@ -91,10 +75,6 @@ class AlertaController extends Controller
 
     public function update(Request $request, Nino $nino, Alerta $alerta)
     {
-        if ($nino->madre_id !== Auth::id() || $alerta->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'tipo_alerta'                  => ['required', 'string', 'max:255'],
             'descripcion'                  => ['nullable', 'string', 'max:255'],
@@ -111,10 +91,6 @@ class AlertaController extends Controller
 
     public function destroy(Nino $nino, Alerta $alerta)
     {
-        if ($nino->madre_id !== Auth::id() || $alerta->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $alerta->delete();
 
         return Redirect::route('ninos.alertas.index', $nino)

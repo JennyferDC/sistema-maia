@@ -14,10 +14,6 @@ class PrediccionController extends Controller
 {
     public function index(Nino $nino)
     {
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $predicciones = Prediccion::where('nino_id', $nino->id)
             ->orderBy('fecha_prediccion', 'desc')
             ->paginate(10);
@@ -30,10 +26,6 @@ class PrediccionController extends Controller
 
     public function show(Nino $nino, Prediccion $prediccion)
     {
-        if ($nino->madre_id !== Auth::id() || $prediccion->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         return Inertia::render('Predicciones/Show', [
             'nino' => $nino->only(['id', 'nombre']),
             'prediccion' => $prediccion
@@ -43,10 +35,6 @@ class PrediccionController extends Controller
     public function store(Request $request, Nino $nino)
     {
         // Las predicciones normalmente las genera el sistema, pero aquí dejo validación si se requiriera
-        if ($nino->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'tipo' => 'required|string|max:255',
             'resultado' => 'required|string',
@@ -66,10 +54,6 @@ class PrediccionController extends Controller
 
     public function destroy(Nino $nino, Prediccion $prediccion)
     {
-        if ($nino->madre_id !== Auth::id() || $prediccion->nino_id !== $nino->id) {
-            abort(403, 'No autorizado');
-        }
-
         $prediccion->delete();
 
         return Redirect::route('ninos.predicciones.index', $nino)

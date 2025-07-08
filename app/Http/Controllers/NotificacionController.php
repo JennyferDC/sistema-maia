@@ -26,10 +26,6 @@ class NotificacionController extends Controller
 
     public function show(Notificacion $notificacion)
     {
-        if ($notificacion->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         return Inertia::render('Notificaciones/Show', [
             'notificacion' => $notificacion->load('alerta:id,tipo_alerta,descripcion')
         ]);
@@ -58,10 +54,6 @@ class NotificacionController extends Controller
 
     public function update(Request $request, Notificacion $notificacion)
     {
-        if ($notificacion->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $data = $request->validate([
             'leida' => 'required|boolean',
             'estado' => 'required|string|max:50'
@@ -75,10 +67,6 @@ class NotificacionController extends Controller
 
     public function destroy(Notificacion $notificacion)
     {
-        if ($notificacion->madre_id !== Auth::id()) {
-            abort(403, 'No autorizado');
-        }
-
         $notificacion->delete();
 
         return Redirect::route('notificaciones.index')
