@@ -52,6 +52,8 @@ Route::middleware([
     Route::get('/ninos/{nino}/evaluaciones/create', [EvaluacionDesarrolloController::class, 'create'])->name('evaluaciones.create');
     Route::post('/ninos/{nino}/evaluaciones', [EvaluacionDesarrolloController::class, 'store'])->name('evaluaciones.store');
     Route::get('/evaluaciones/show/{id}', [EvaluacionDesarrolloController::class, 'show'])->name('evaluaciones.show');
+    Route::post('/ninos/{nino}/evaluaciones/{evaluacion}', [EvaluacionDesarrolloController::class, 'update'])->name('evaluaciones.update');
+    Route::patch('/ninos/{nino}/evaluaciones/{evaluacion}', [EvaluacionDesarrolloController::class, 'update']);
 
     // 📌 DIAGNÓSTICO MÉDICO
     Route::resource('diagnosticos', DiagnosticoMedicoController::class);
@@ -82,6 +84,9 @@ Route::middleware([
     // 📌 REGISTROS OBSERVACIÓN SALUD
     Route::get('/ninos/{nino}/observaciones', [RegistroObservacionController::class, 'index'])->name('observaciones.index');
     Route::post('/ninos/{nino}/observaciones', [RegistroObservacionController::class, 'store'])->name('observaciones.store');
+
+    // 📌 HITOS LOGRADOS
+    Route::post('/ninos/{nino}/hitos-logrados', [\App\Http\Controllers\HitoLogradoController::class, 'store'])->name('hitos-logrados.store');
 
 
 });

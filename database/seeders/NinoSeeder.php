@@ -24,18 +24,21 @@ class NinoSeeder extends Seeder
             return;
         }
 
-        // Crear 10 registros de ejemplo
-        for ($i = 0; $i < 10; $i++) {
-            Nino::create([
-                'nombre' => 'Niño ' . ($i + 1),
-                'semanas_prematuro' => rand(28, 36),
-                'fecha_nacimiento' => now()->subDays(rand(1, 365))->format('Y-m-d'),                
-                'sexo' => ['masculino', 'femenino'][rand(0,1)],
-                'peso' => rand(2500, 4000) / 1000, // peso en kg
-                'talla' => rand(45, 55), // talla en cm
-                'madre_id' => $madres[array_rand($madres)],
-                'etapa_desarrollo_id' => $etapas[array_rand($etapas)],
-            ]);
+        // Crear 2 niños para cada madre
+        foreach ($madres as $madre_id) {
+            for ($i = 1; $i <= 2; $i++) {
+                Nino::create([
+                    'nombre' => 'Hijo ' . $i . ' de madre ' . $madre_id,
+                    'es_prematuro' => rand(0, 1),
+                    'semanas_prematuro' => rand(28, 40),
+                    'fecha_nacimiento' => now()->subDays(rand(30, 2000))->format('Y-m-d'),
+                    'sexo' => ['masculino', 'femenino'][rand(0,1)],
+                    'peso' => rand(2500, 4000) / 1000, // peso en kg
+                    'talla' => rand(45, 55), // talla en cm
+                    'madre_id' => $madre_id,
+                    'etapa_desarrollo_id' => $etapas[array_rand($etapas)],
+                ]);
+            }
         }
     }
 }

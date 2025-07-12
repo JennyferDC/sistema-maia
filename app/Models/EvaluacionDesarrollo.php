@@ -19,7 +19,7 @@ class EvaluacionDesarrollo extends Model
         'talla',
         'comentario_madre',
     ];
-    
+
     // Relación con Niño
 
     public function nino()
@@ -31,5 +31,11 @@ class EvaluacionDesarrollo extends Model
     {
         return $this->belongsTo(EtapaDesarrollo::class, 'etapa_desarrollo_id');
     }
-    
+
+    public function foto()
+    {
+        return $this->hasOne(FotoNino::class, 'etapa_desarrollo_id', 'etapa_desarrollo_id')
+            ->whereColumn('nino_id', 'nino_id');
+    }
+
 }

@@ -35,15 +35,17 @@ class DiagnosticoMedicoController extends Controller
     {
         $request->validate([
             'tipo_diagnostico' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
             'fecha_inicio' => 'required|date',
-            'origen_diagnostico' => 'nullable|string|max:255',
+            'fecha_fin' => 'nullable|date',
             'nino_id' => 'required|exists:ninos,id',
         ]);
 
         DiagnosticoMedico::create($request->only([
             'tipo_diagnostico',
+            'descripcion',
             'fecha_inicio',
-            'origen_diagnostico',
+            'fecha_fin',
             'nino_id',
         ]));
 
@@ -99,15 +101,17 @@ class DiagnosticoMedicoController extends Controller
     {
         $request->validate([
             'tipo_diagnostico' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
             'fecha_inicio' => 'required|date',
-            'origen_diagnostico' => 'nullable|string|max:255',
+            'fecha_fin' => 'nullable|date',
             'nino_id' => 'required|exists:ninos,id',
         ]);
 
         $diagnosticoMedico->update($request->only([
             'tipo_diagnostico',
+            'descripcion',
             'fecha_inicio',
-            'origen_diagnostico',
+            'fecha_fin',
             'nino_id',
         ]));
 

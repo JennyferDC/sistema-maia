@@ -48,28 +48,21 @@ class HitoLogradoController extends Controller
     public function store(Request $request, Nino $nino)
     {
         $data = $request->validate([
-            'logros'                       => 'required|array',
-            'logros.*.hito_id'             => 'required|exists:hitos,id',
-            'logros.*.fecha_logro'         => 'nullable|date',
-            'logros.*.observaciones'       => 'nullable|string|max:255',
+            'hito_id'             => 'required|exists:hitos,id',
+            'fecha_logro'         => 'nullable|date',
+            'observaciones'       => 'nullable|string|max:255',
+            'etapa_desarrollo_id' => 'required|exists:etapas_desarrollo,id',
         ]);
 
-        foreach ($data['logros'] as $logro) {
-            HitoLogrado::updateOrCreate(
-                [
-                    'nino_id' => $nino->id,
-                    'hito_id' => $logro['hito_id'],
-                ],
-                [
-                    'fecha_logro'         => $logro['fecha_logro'] ?? Carbon::now(),
-                    'observaciones'       => $logro['observaciones'] ?? null,
-                    'etapa_desarrollo_id' => $nino->etapa_desarrollo_id,
-                ]
-            );
-        }
+        HitoLogrado::create([
+            'nino_id'             => $nino->id,
+            'hito_id'             => $data['hito_id'],
+            'fecha_logro'         => $data['fecha_logro'] ?? Carbon::now(),
+            'observaciones'       => $data['observaciones'] ?? null,
+            'etapa_desarrollo_id' => $data['etapa_desarrollo_id'],
+        ]);
 
-        return Redirect::route('ninos.hitos.index', $nino)
-            ->with('success', 'Hitos logrados guardados correctamente.');
+        return response()->json(['success' => true]);
     }
 
     public function destroy(Nino $nino, HitoLogrado $hitoLogrado)
