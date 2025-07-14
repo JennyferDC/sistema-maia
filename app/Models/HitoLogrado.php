@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class HitoLogrado extends Model
 {
@@ -20,7 +21,7 @@ class HitoLogrado extends Model
     ];
 
     // Relación
-    
+
     public function nino()
     {
         return $this->belongsTo(Nino::class, 'nino_id');

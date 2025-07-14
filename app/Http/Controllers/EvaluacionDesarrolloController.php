@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use App\Models\FotoNino;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class EvaluacionDesarrolloController extends Controller
 {
@@ -48,18 +51,74 @@ class EvaluacionDesarrolloController extends Controller
     {
         $data = $request->validate([
             'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'],
-            'fecha_evaluacion'    => ['required', 'date'],
             'peso'                => ['required', 'numeric', 'min:0'],
             'talla'               => ['required', 'numeric', 'min:0'],
             'comentario_madre'    => ['nullable', 'string', 'max:255'],
+            'foto'                => ['nullable', 'image', 'max:2048'],
+            'foto_descripcion'    => ['nullable', 'string', 'max:255'],
         ]);
 
         $data['nino_id'] = $nino->id;
+        $data['fecha_evaluacion'] = now();
 
-        EvaluacionDesarrollo::create($data);
+        $evaluacion = EvaluacionDesarrollo::create($data);
 
-        return Redirect::route('ninos.evaluaciones.index', $nino)
+        // Guardar foto si se envía
+        if ($request->hasFile('foto')) {
+            $ruta = Storage::putFile('public/fotos_ninos/' . $nino->id, $request->file('foto'));
+            FotoNino::create([
+                'ruta_foto' => Storage::url($ruta),
+                'fecha_subida' => Carbon::now(),
+                'descripcion' => $request->input('foto_descripcion'),
+                'nino_id' => $nino->id,
+                'etapa_desarrollo_id' => $data['etapa_desarrollo_id'],
+            ]);
+        }
+
+        return Redirect::route('etapas.por-nino', $nino)
             ->with('success', 'Evaluación registrada exitosamente.');
+    }
+
+    public function update(Request $request, Nino $nino, EvaluacionDesarrollo $evaluacion)
+    {
+        $data = $request->validate([
+            'etapa_desarrollo_id' => ['required', 'exists:etapas_desarrollo,id'],
+            'peso'                => ['required', 'numeric', 'min:0'],
+            'talla'               => ['required', 'numeric', 'min:0'],
+            'comentario_madre'    => ['nullable', 'string', 'max:255'],
+            'foto'                => ['nullable', 'image', 'max:2048'],
+            'foto_descripcion'    => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $data['fecha_evaluacion'] = now();
+        $evaluacion->update($data);
+
+        // Guardar o actualizar foto si se envía
+        if ($request->hasFile('foto')) {
+            $ruta = Storage::putFile('public/fotos_ninos/' . $nino->id, $request->file('foto'));
+            // Buscar si ya existe una foto para este niño y etapa
+            $foto = FotoNino::where('nino_id', $nino->id)
+                ->where('etapa_desarrollo_id', $data['etapa_desarrollo_id'])
+                ->first();
+            if ($foto) {
+                $foto->update([
+                    'ruta_foto' => Storage::url($ruta),
+                    'fecha_subida' => Carbon::now(),
+                    'descripcion' => $request->input('foto_descripcion'),
+                ]);
+            } else {
+                FotoNino::create([
+                    'ruta_foto' => Storage::url($ruta),
+                    'fecha_subida' => Carbon::now(),
+                    'descripcion' => $request->input('foto_descripcion'),
+                    'nino_id' => $nino->id,
+                    'etapa_desarrollo_id' => $data['etapa_desarrollo_id'],
+                ]);
+            }
+        }
+
+        return redirect()->route('etapas.por-nino', $nino)
+            ->with('success', 'Evaluación actualizada exitosamente.');
     }
 
     public function show(Nino $nino, EvaluacionDesarrollo $evaluacion)

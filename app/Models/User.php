@@ -25,7 +25,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    
+
     protected $fillable = [
         'name',
         'apellido',
@@ -70,7 +70,7 @@ class User extends Authenticatable
 
     public function ninos()
     {
-        return $this->hasMany(Nino::class, 'madre_id');
+        return $this->hasMany(\App\Models\Nino::class, 'madre_id');
     }
 
     // Relación con las notificaciones

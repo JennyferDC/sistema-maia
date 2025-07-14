@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class EtapaDesarrolloController extends Controller
 {
-    
+
     public function index()
     {
         $etapas = EtapaDesarrollo::with('hitos')->orderBy('id')->get();
@@ -96,13 +96,13 @@ class EtapaDesarrolloController extends Controller
 
     public function etapasPorNino(Nino $nino)
     {
-    $etapas = EtapaDesarrollo::with('hitos')->orderBy('id')->get();
+        $nino->load(['hitoLogrados', 'evaluaciones.foto']);
+        $etapas = EtapaDesarrollo::with('hitos')->orderBy('id')->get();
 
-    return Inertia::render('Etapas/Index', [
-        'nino' => $nino,
-        'etapas' => $etapas,
-    ]);
-    
-   }
-   
+        return Inertia::render('Etapas/Index', [
+            'nino' => $nino,
+            'etapas' => $etapas,
+        ]);
+    }
+
 }

@@ -1,138 +1,163 @@
 <template>
-  <div class="min-h-screen bg-pink-50 p-6">
+    <div class="max-w-3xl mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-6">Hitos por Etapa de Desarrollo</h1>
 
-    <!-- 🎀 ENCABEZADO CON NOMBRE DEL NIÑO -->
-    <header class="relative overflow-hidden rounded-3xl shadow-lg mb-10">
-      <div class="bg-gradient-to-r from-pink-300 via-fuchsia-300 to-purple-300 pb-16 pt-10 px-6 sm:px-10">
-        <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-white flex items-center gap-3">
-          <span class="inline-block p-2 bg-white/20 rounded-full backdrop-blur-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 14.25c2.485 0 4.5-2.015 4.5-4.5S14.485 5.25 12 5.25 7.5 7.265 7.5 9.75s2.015 4.5 4.5 4.5z" />
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M15.75 14.25a3.75 3.75 0 013.75 3.75v.75M8.25 14.25a3.75 3.75 0 00-3.75 3.75v.75" />
-            </svg>
-          </span>
-          Etapas de {{ nino.nombre }}
-        </h1>
-      </div>
+        <div v-for="etapa in etapas" :key="etapa.id" class="mb-8">
+            <div class="mb-2 flex items-center justify-between">
+                <div>
+                    <span class="text-lg font-semibold">{{
+                        getNombre(etapa.nombre_etapa)
+                    }}</span>
+                    <span class="text-gray-500 ml-2">{{
+                        getRango(etapa.nombre_etapa)
+                    }}</span>
+                </div>
+                <AButton
+                    class="ml-4"
+                    type="primary"
+                    @click="() => abrirModalEvaluacion(etapa)"
+                >
+                    Evaluación
+                </AButton>
+            </div>
 
-      <!-- Curva decorativa inferior -->
-      <svg class="absolute bottom-0 left-0 w-full h-12 text-white" viewBox="0 0 1440 320" preserveAspectRatio="none">
-        <path
-          fill="currentColor"
-          d="M0,224L60,229.3C120,235,240,245,360,229.3C480,213,600,171,720,165.3C840,160,960,192,1080,192C1200,192,1320,160,1380,144L1440,128V320H0Z"
-        />
-      </svg>
-    </header>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <a-card
+                    v-for="hito in etapa.hitos"
+                    :key="hito.id"
+                    class="border border-gray-200 shadow-sm cursor-pointer"
+                    :bodyStyle="{ padding: '8px' }"
+                    @click="() => abrirModal(etapa, hito)"
+                >
+                    <div
+                        class="hito-checkbox-row"
+                        @click.stop="() => abrirModal(etapa, hito)"
+                    >
+                        <span
+                            class="custom-checkbox"
+                            :class="{ checked: hito.completado }"
+                        >
+                            <svg
+                                v-if="hito.completado"
+                                class="check-icon"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <circle cx="10" cy="10" r="9" fill="#22c55e" />
+                                <path
+                                    d="M6 10.5L9 13.5L14 8.5"
+                                    stroke="white"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </span>
+                        <span class="ml-4">{{ hito.nombre_hito }}</span>
+                    </div>
+                </a-card>
 
-    <!-- 🔙 BOTÓN PARA VOLVER AL PERFIL DEL NIÑO -->
-    <div class="mb-8">
-      <Link
-        :href="route('ninos.show', nino.id)"
-        class="inline-flex items-center gap-2 text-pink-600 hover:text-pink-800 font-medium"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-             viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Volver al perfil de {{ nino.nombre }}
-      </Link>
-    </div>
+                <span
+                    v-if="!etapa.hitos.length"
+                    class="text-gray-400 col-span-full"
+                >
+                    Sin hitos registrados
+                </span>
+            </div>
 
-    <!-- 🔁 ETAPAS DEL DESARROLLO -->
-    <div v-for="etapa in etapas" :key="etapa.id" class="mb-12">
-      
-      <!-- 📌 Nombre y rango de etapa -->
-      <div class="mb-2">
-        <span class="text-lg font-semibold">{{ getNombre(etapa.nombre_etapa) }}</span>
-        <span class="text-gray-500 ml-2">{{ getRango(etapa.nombre_etapa) }}</span>
-      </div>
-
-      <!-- 🧩 Lista de hitos -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div
-          v-for="hito in etapa.hitos"
-          :key="hito.id"
-          class="border border-gray-300 rounded-lg p-3 shadow-sm relative"
-        >
-          <!-- Checkbox personalizado -->
-          <label class="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              v-model="hito.marcado"
-              @change="togglePanel(hito)"
-              class="hidden"
+            <ModalHitoLogrado
+                :open="mostrarModal"
+                :etapas="etapas"
+                :hito="hitoSeleccionado"
+                :nino-id="nino.id"
+                @cancel="cerrarModal"
             />
-            <span
-              class="w-5 h-5 rounded-full border-2 border-gray-400 flex items-center justify-center mr-2"
-              :class="{ 'bg-green-500 border-green-500': hito.marcado }"
-            >
-              <svg v-if="hito.marcado" class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </span>
-            <span class="text-base">{{ hito.nombre_hito }}</span>
-          </label>
-
-          <!-- Panel flotante con opciones -->
-          <div
-            v-if="hito.marcado && hito.mostrarPanel"
-            class="bg-gray-50 border mt-2 rounded-md p-3 text-sm"
-          >
-            <p class="mb-2 font-medium">¿Se cumplió en esta etapa?</p>
-
-            <label class="flex items-center mb-1">
-              <input
-                type="radio"
-                value="en_etapa"
-                v-model="hito.origen"
-                class="mr-2"
-              />
-              Sí, en esta etapa
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                value="otra_etapa"
-                v-model="hito.origen"
-                class="mr-2"
-              />
-              Lo logró en otra etapa
-            </label>
-          </div>
+            <ModalEvaluacionEtapa
+                :open="mostrarModalEvaluacion"
+                :etapa="etapaSeleccionada"
+                :nino="nino"
+                :evaluacion="evaluacionSeleccionada"
+                @cancel="cerrarModalEvaluacion"
+            />
         </div>
-
-        <!-- Mensaje si no hay hitos -->
-        <span v-if="!etapa.hitos.length" class="text-gray-400 col-span-full">
-          Sin hitos registrados
-        </span>
-      </div>
     </div>
-  </div>
 </template>
 
 <script setup>
-// 📦 Props que recibe el componente
+import { Card as ACard, Button as AButton } from "ant-design-vue";
+import ModalHitoLogrado from "./ModalHitoLogrado.vue";
+import ModalEvaluacionEtapa from "./ModalEvaluacionEtapa.vue";
+import { ref } from "vue";
+import { router } from "@inertiajs/vue3";
+
 const props = defineProps({
-  etapas: {
-    type: Array,
-    required: true
-  },
-  nino: {
-    type: Object,
-    required: true
-  }
+    etapas: {
+        type: Array,
+        required: true,
+    },
+    nino: {
+        type: Object,
+        required: true,
+        default: null,
+    },
 });
 
-// 🧠 Inicializa campos de visualización para cada hito
-props.etapas.forEach(etapa => {
-  etapa.hitos.forEach(hito => {
-    if (hito.marcado === undefined) hito.marcado = false;
-    if (hito.mostrarPanel === undefined) hito.mostrarPanel = false;
-    if (hito.origen === undefined) hito.origen = 'en_etapa';
-  });
+const mostrarModal = ref(false);
+const hitoSeleccionado = ref(null);
+
+// Marcar los hitos logrados por el niño
+if (props.nino && props.nino.hito_logrados) {
+    const logradosIds = props.nino.hito_logrados.map((h) => h.hito_id);
+    props.etapas.forEach((etapa) => {
+        etapa.hitos.forEach((hito) => {
+            hito.completado = logradosIds.includes(hito.id);
+        });
+    });
+} else {
+    // Inicializa el estado visual (opcional)
+    props.etapas.forEach((etapa) => {
+        etapa.hitos.forEach((hito) => {
+            if (hito.completado === undefined) hito.completado = false;
+        });
+    });
+}
+
+function abrirModal(etapa, hito) {
+    hitoSeleccionado.value = { ...hito };
+    mostrarModal.value = true;
+}
+function cerrarModal() {
+    mostrarModal.value = false;
+    hitoSeleccionado.value = null;
+}
+
+const mostrarModalEvaluacion = ref(false);
+const etapaSeleccionada = ref(null);
+const evaluacionSeleccionada = ref(null);
+
+function abrirModalEvaluacion(etapa) {
+    etapaSeleccionada.value = { ...etapa };
+    // Buscar la evaluación de esta etapa para el niño
+    if (props.nino && Array.isArray(props.nino.evaluaciones)) {
+        evaluacionSeleccionada.value =
+            props.nino.evaluaciones.find(
+                (ev) => ev.etapa_desarrollo_id === etapa.id
+            ) || null;
+    } else {
+        evaluacionSeleccionada.value = null;
+    }
+    mostrarModalEvaluacion.value = true;
+}
+function cerrarModalEvaluacion() {
+    mostrarModalEvaluacion.value = false;
+    etapaSeleccionada.value = null;
+    evaluacionSeleccionada.value = null;
+}
+
+console.log("Props recibidos en Etapas/Index.vue:", {
+    etapas: props.etapas,
+    nino: props.nino,
 });
 
 // ✅ Mostrar u ocultar panel flotante
@@ -142,13 +167,65 @@ const togglePanel = (hito) => {
 
 // 🧠 Extraer solo nombre sin paréntesis
 const getNombre = (nombre_etapa) => {
-  const idx = nombre_etapa.indexOf('(');
-  return idx !== -1 ? nombre_etapa.slice(0, idx).trim() : nombre_etapa;
+    const idx = nombre_etapa.indexOf("(");
+    return idx !== -1 ? nombre_etapa.slice(0, idx).trim() : nombre_etapa;
 };
 
 // 🧠 Extraer texto dentro del paréntesis
 const getRango = (nombre_etapa) => {
-  const match = nombre_etapa.match(/\(([^)]+)\)/);
-  return match ? match[1] : '';
+    const match = nombre_etapa.match(/\(([^)]+)\)/);
+    return match ? match[1] : "";
 };
 </script>
+
+<style scoped>
+:deep(.ant-card) {
+    border-radius: 16px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px 0 rgba(34, 197, 94, 0.08),
+        0 1.5px 4px 0 rgba(0, 0, 0, 0.04);
+    border: 1.5px solid #e5e7eb;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    transition: box-shadow 0.25s, border-color 0.25s;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+}
+:deep(.ant-card):hover {
+    box-shadow: 0 4px 16px 0 rgba(34, 197, 94, 0.18),
+        0 3px 8px 0 rgba(0, 0, 0, 0.08);
+    border-color: #22c55e;
+}
+
+.hito-checkbox-row {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+.custom-checkbox {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2.5px solid #d1d5db;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, background 0.2s;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+.custom-checkbox.checked {
+    border-color: #22c55e;
+    background: #e6faed;
+}
+.check-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+</style>
