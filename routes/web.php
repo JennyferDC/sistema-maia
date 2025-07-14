@@ -30,7 +30,7 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        return redirect()->route('ninos.index');
     })->name('dashboard');
 
     // 📌 NINOS

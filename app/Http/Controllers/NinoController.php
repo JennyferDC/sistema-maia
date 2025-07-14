@@ -22,7 +22,7 @@ class NinoController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return Inertia::render('Ninos/Index', [
+        return Inertia::render('Ninos/MisNinos', [
             'ninos' => $ninos
         ]);
     }
@@ -143,5 +143,5 @@ class NinoController extends Controller
 
         return Redirect::route('ninos.index')->with('success', 'Niño eliminado correctamente.');
     }
-    
+
 }
