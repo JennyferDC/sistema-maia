@@ -9,9 +9,9 @@ class EtapaDesarrollo extends Model
 {
     use HasFactory;
 
-    protected $table = 'etapas_desarrollo'; 
+    protected $table = 'etapas_desarrollo';
 
-    protected $fillable = ['nombre_etapa']; 
+    protected $fillable = ['nombre_etapa', 'mes_inicio', 'mes_fin'];
 
     // Relaciones
 

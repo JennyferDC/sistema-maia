@@ -16,12 +16,7 @@ use App\Http\Controllers\PrediccionController;
 use App\Http\Controllers\RegistroObservacionController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('login');
 });
 
 Route::middleware([
@@ -39,7 +34,7 @@ Route::middleware([
     Route::post('/ninos', [NinoController::class, 'store'])->name('ninos.store');
     Route::get('/ninos/{nino}', [NinoController::class, 'show'])->name('ninos.show');
     Route::get('/ninos/{nino}/edit', [NinoController::class, 'edit'])->name('ninos.edit');
-    Route::put('/ninos/{nino}', [NinoController::class, 'update'])->name('ninos.update');
+    Route::post('/ninos/{nino}', [NinoController::class, 'update'])->name('ninos.update');
     Route::patch('/ninos/{nino}', [NinoController::class, 'update']);
     Route::delete('/ninos/{nino}', [NinoController::class, 'destroy'])->name('ninos.destroy');
 

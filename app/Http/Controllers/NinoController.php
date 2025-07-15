@@ -18,9 +18,29 @@ class NinoController extends Controller
     public function index()
     {
         $ninos = Nino::with(['madre', 'etapaDesarrollo'])
-            ->where('madre_id', Auth::id())  // ← FILTRA SOLO LOS NIÑOS DE LA MADRE AUTENTICADA
+            ->where('madre_id', Auth::id())
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+
+        // Actualizar etapa_desarrollo_id según la edad para cada niño
+        foreach ($ninos as $nino) {
+            $edadMeses = Carbon::parse($nino->fecha_nacimiento)->diffInMonths(Carbon::now());
+            $nuevaEtapa = null;
+            if ($edadMeses <= 1) {
+                $nuevaEtapa = 1;
+            } elseif ($edadMeses <= 12) {
+                $nuevaEtapa = 2;
+            } elseif ($edadMeses <= 24) {
+                $nuevaEtapa = 3;
+            } else {
+                $nuevaEtapa = 4;
+            }
+            if ($nino->etapa_desarrollo_id !== $nuevaEtapa) {
+                $nino->etapa_desarrollo_id = $nuevaEtapa;
+                $nino->save();
+                $nino->refresh();
+            }
+        }
 
         return Inertia::render('Ninos/MisNinos', [
             'ninos' => $ninos
@@ -62,6 +82,7 @@ class NinoController extends Controller
             $data['etapa_desarrollo_id'] = 1;
         } elseif ($edadMeses <= 12) {
             $data['etapa_desarrollo_id'] = 2;
+
         } elseif ($edadMeses <= 24) {
             $data['etapa_desarrollo_id'] = 3;
         } else {
@@ -86,7 +107,6 @@ class NinoController extends Controller
             'predicciones',
             'recomendaciones'
         ]);
-
         return Inertia::render('Ninos/Show', [
             'nino' => $nino
         ]);

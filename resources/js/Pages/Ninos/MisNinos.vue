@@ -13,10 +13,10 @@
                             'bg-pink-600 text-white': viewMode === 'cards',
                             'bg-white text-gray-700': viewMode !== 'cards',
                         }"
-                        class="px-4 py-2 text-sm font-medium rounded-l-lg border border-gray-300"
+                        class="px-4 py-2 text-sm font-medium rounded-l-lg border border-gray-300 flex items-center"
                     >
-                        <AppstoreOutlined class="inline mr-1" />
-                        Tarjetas
+                        <AppstoreOutlined class="inline mr-1 align-middle" />
+                        <span class="align-middle">Tarjetas</span>
                     </button>
                     <button
                         @click="viewMode = 'table'"
@@ -24,10 +24,10 @@
                             'bg-pink-600 text-white': viewMode === 'table',
                             'bg-white text-gray-700': viewMode !== 'table',
                         }"
-                        class="px-4 py-2 text-sm font-medium rounded-r-lg border border-gray-300"
+                        class="px-4 py-2 text-sm font-medium rounded-r-lg border border-gray-300 flex items-center"
                     >
-                        <TableOutlined class="inline mr-1" />
-                        Tabla
+                        <TableOutlined class="inline mr-1 align-middle" />
+                        <span class="align-middle">Tabla</span>
                     </button>
                 </div>
             </div>
@@ -35,24 +35,34 @@
             <!-- ✅ Vista tipo Tarjetas -->
             <div
                 v-if="viewMode === 'cards'"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                class="grid gap-6"
+                style="
+                    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+                "
             >
                 <div
-                    v-for="nino in ninos.data"
+                    v-for="nino in ninos"
                     :key="nino.id"
-                    class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                    class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer flex flex-col h-full min-w-[270px]"
                     @click="irADetalleNino(nino.id)"
                 >
-                    <div class="p-6">
+                    <div class="p-6 flex-1 flex flex-col">
                         <!-- ✅ Encabezado tarjeta -->
-                        <div class="flex justify-between items-start mb-4">
-                            <h2 class="text-xl font-bold text-gray-800">
+                        <div class="mb-4 flex flex-col items-center">
+                            <h2
+                                class="text-xl font-bold text-gray-800 text-center"
+                            >
                                 {{ nino.nombre }}
                             </h2>
                             <span
-                                class="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium"
+                                class="mt-2 px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium text-center"
+                                style="display: inline-block"
                             >
-                                {{ nino.etapa_desarrollo.nombre }}
+                                {{
+                                    nino.etapa_desarrollo?.nombre ||
+                                    nino.etapa_desarrollo?.nombre_etapa ||
+                                    "Sin etapa"
+                                }}
                             </span>
                         </div>
 
@@ -62,32 +72,42 @@
                                 <ClockCircleOutlined
                                     class="h-5 w-5 mr-2 text-pink-500"
                                 />
-                                <span
-                                    >Nació en la semana
-                                    {{ nino.fecha_nacimiento }}</span
-                                >
+                                <span>
+                                    Nació el
+                                    {{
+                                        formatearFecha(
+                                            nino.fecha_nacimiento,
+                                            "mediano"
+                                        )
+                                    }}
+                                </span>
                             </div>
                             <div class="flex items-center">
                                 <ShoppingOutlined
                                     class="h-5 w-5 mr-2 text-pink-500"
                                 />
-                                <span>Peso: {{ nino.peso_nacimiento }} kg</span>
+                                <span
+                                    >Peso:
+                                    {{ nino.peso_nacimiento || nino.peso }}
+                                    kg</span
+                                >
                             </div>
                             <div class="flex items-center">
                                 <CalendarOutlined
                                     class="h-5 w-5 mr-2 text-pink-500"
                                 />
                                 <span
-                                    >Talla: {{ nino.talla_nacimiento }} cm</span
+                                    >Talla:
+                                    {{ nino.talla_nacimiento || nino.talla }}
+                                    cm</span
                                 >
                             </div>
-
                         </div>
                     </div>
 
-                    <!-- ✅ Acciones en tarjeta: solo Monitorear y Ver etapas -->
+                    <!-- ✅ Footer fijo abajo -->
                     <div
-                        class="bg-gray-50 px-6 py-4 flex justify-end space-x-3"
+                        class="bg-gray-50 px-6 py-4 flex justify-end space-x-3 mt-auto min-h-[64px] items-center"
                     >
                         <AButton
                             type="default"
@@ -119,7 +139,7 @@
                             >
                                 Nombre
                             </th>
-                            <th class="px-6 py-3">Semana Nac.</th>
+                            <th class="px-6 py-3">Nacimiento</th>
                             <th class="px-6 py-3">Peso (kg)</th>
                             <th class="px-6 py-3">Talla (cm)</th>
                             <th class="px-6 py-3">Etapa</th>
@@ -128,7 +148,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr
-                            v-for="nino in ninos.data"
+                            v-for="nino in ninos"
                             :key="nino.id"
                             class="hover:bg-gray-50"
                         >
@@ -136,13 +156,18 @@
                                 {{ nino.nombre }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ nino.fecha_nacimiento }}
+                                {{
+                                    formatearFecha(
+                                        nino.fecha_nacimiento,
+                                        "mediano"
+                                    )
+                                }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ nino.peso_nacimiento }}
+                                {{ nino.peso_nacimiento || nino.peso }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ nino.talla_nacimiento }}
+                                {{ nino.talla_nacimiento || nino.talla }}
                             </td>
                             <td class="px-6 py-4">
                                 <span
@@ -159,14 +184,18 @@
                                     class="text-blue-600 hover:text-blue-900"
                                     title="Ver detalles"
                                 >
-                                    <EyeOutlined class="h-5 w-5 inline" />
+                                    <EyeOutlined
+                                        class="h-5 w-5 inline align-middle"
+                                    />
                                 </Link>
                                 <Link
                                     :href="`/ninos/${nino.id}/edit`"
                                     class="text-green-600 hover:text-green-900"
                                     title="Editar"
                                 >
-                                    <EditOutlined class="h-5 w-5 inline" />
+                                    <EditOutlined
+                                        class="h-5 w-5 inline align-middle"
+                                    />
                                 </Link>
 
                                 <!-- ✅ Nuevo botón: Ver Etapas -->
@@ -175,7 +204,9 @@
                                     class="text-purple-600 hover:text-purple-900"
                                     title="Ver etapas"
                                 >
-                                    <AppstoreOutlined class="h-5 w-5 inline" />
+                                    <AppstoreOutlined
+                                        class="h-5 w-5 inline align-middle"
+                                    />
                                 </Link>
 
                                 <button
@@ -183,39 +214,14 @@
                                     class="text-red-600 hover:text-red-900"
                                     title="Eliminar"
                                 >
-                                    <DeleteOutlined class="h-5 w-5 inline" />
+                                    <DeleteOutlined
+                                        class="h-5 w-5 inline align-middle"
+                                    />
                                 </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <!-- ✅ Paginación -->
-            <div
-                v-if="ninos.meta && ninos.meta.last_page > 1"
-                class="mt-6 flex justify-center"
-            >
-                <nav
-                    class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                >
-                    <Link
-                        v-for="(link, index) in ninos.meta.links"
-                        :key="index"
-                        :href="link.url || '#'"
-                        :class="{
-                            'bg-pink-600 text-white': link.active,
-                            'bg-white text-gray-500 hover:bg-gray-50':
-                                !link.active,
-                            'rounded-l-md': index === 0,
-                            'rounded-r-md':
-                                index === ninos.meta.links.length - 1,
-                            'pointer-events-none opacity-50': !link.url,
-                        }"
-                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
-                        v-html="link.label"
-                    />
-                </nav>
             </div>
         </div>
     </AppLayout>
@@ -224,6 +230,8 @@
 <script setup>
 import { Link, router } from "@inertiajs/vue3";
 import { ref } from "vue";
+import { formatearFecha } from "@/utils/date.js";
+
 import {
     PlusOutlined,
     AppstoreOutlined,
@@ -241,12 +249,14 @@ import ModalDiagnosticoMedico from "./componentes/ModalDiagnosticoMedico.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
-    ninos: Object,
+    ninos: Array,
 });
 
-const viewMode = ref("cards"); // Estado para cambiar entre vista de tarjetas y tabla
+// Log de props recibidas
+console.log("Props recibidas en MisNinos.vue:", props.ninos);
 
-// ✅ Función para eliminar un niño
+const viewMode = ref("cards");
+
 function destroy(id) {
     if (confirm("¿Estás seguro de eliminar este niño?")) {
         router.delete(route("ninos.destroy", id));
@@ -257,3 +267,11 @@ function irADetalleNino(id) {
     router.visit(route("ninos.show", id));
 }
 </script>
+
+<style scoped>
+.bg-gray-50.mt-auto {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+}
+</style>

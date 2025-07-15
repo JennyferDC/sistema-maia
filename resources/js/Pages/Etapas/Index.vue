@@ -20,6 +20,8 @@
                         class="ml-4"
                         type="primary"
                         @click="() => abrirModalEvaluacion(etapa)"
+                        :icon="h(getIconoEvaluacion(etapa))"
+                        :disabled="!puedeEvaluarEtapa(etapa)"
                     >
                         Evaluación
                     </AButton>
@@ -74,33 +76,34 @@
                         Sin hitos registrados
                     </span>
                 </div>
+            </div>
         </div>
 
-    </div>
-
-    <ModalHitoLogrado
-                :open="mostrarModal"
-                :etapas="etapas"
-                :hito="hitoSeleccionado"
-                :nino-id="nino.id"
-                @cancel="cerrarModal"
-            />
-            <ModalEvaluacionEtapa
-                :open="mostrarModalEvaluacion"
-                :etapa="etapaSeleccionada"
-                :nino="nino"
-                :evaluacion="evaluacionSeleccionada"
-                @cancel="cerrarModalEvaluacion"
-            />
+        <ModalHitoLogrado
+            :open="mostrarModal"
+            :etapas="etapas"
+            :hito="hitoSeleccionado"
+            :nino-id="nino.id"
+            @cancel="cerrarModal"
+        />
+        <ModalEvaluacionEtapa
+            :open="mostrarModalEvaluacion"
+            :etapa="etapaSeleccionada"
+            :nino="nino"
+            :evaluacion="evaluacionSeleccionada"
+            @cancel="cerrarModalEvaluacion"
+        />
+    </AppLayout>
 </template>
 
 <script setup>
 import { Card as ACard, Button as AButton } from "ant-design-vue";
 import ModalHitoLogrado from "./componentes/ModalHitoLogrado.vue";
 import ModalEvaluacionEtapa from "./componentes/ModalEvaluacionEtapa.vue";
-import { ref } from "vue";
+import { ref, h } from "vue";
 import { router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { CheckOutlined } from "@ant-design/icons-vue";
 
 const props = defineProps({
     etapas: {
@@ -173,7 +176,7 @@ console.log("Props recibidos en Etapas/Index.vue:", {
 
 // ✅ Mostrar u ocultar panel flotante
 const togglePanel = (hito) => {
-  hito.mostrarPanel = hito.marcado;
+    hito.mostrarPanel = hito.marcado;
 };
 
 // 🧠 Extraer solo nombre sin paréntesis
@@ -187,6 +190,34 @@ const getRango = (nombre_etapa) => {
     const match = nombre_etapa.match(/\(([^)]+)\)/);
     return match ? match[1] : "";
 };
+
+// Calcular edad en meses del niño
+const toMonths = (fechaNacimiento) => {
+    const nacimiento = new Date(fechaNacimiento);
+    const hoy = new Date();
+    return (
+        (hoy.getFullYear() - nacimiento.getFullYear()) * 12 +
+        (hoy.getMonth() - nacimiento.getMonth())
+    );
+};
+
+function puedeEvaluarEtapa(etapa) {
+    if (!props.nino || !props.nino.fecha_nacimiento) return false;
+    const edadMeses = toMonths(props.nino.fecha_nacimiento);
+    // Solo permitir si la edad es igual o mayor al mes_fin de la etapa
+    return edadMeses >= (etapa.mes_fin ?? 0);
+}
+
+function tieneEvaluacion(etapa) {
+    if (!props.nino || !Array.isArray(props.nino.evaluaciones)) return false;
+    return props.nino.evaluaciones.some(
+        (ev) => ev.etapa_desarrollo_id === etapa.id
+    );
+}
+
+function getIconoEvaluacion(etapa) {
+    return tieneEvaluacion(etapa) ? CheckOutlined : null;
+}
 </script>
 
 <style scoped>

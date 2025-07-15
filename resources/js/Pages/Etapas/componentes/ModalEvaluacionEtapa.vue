@@ -4,6 +4,7 @@
         :title="'Evaluación de etapa'"
         @cancel="handleCancel"
         :footer="null"
+        :centered="true"
     >
         <a-form layout="vertical" @submit.prevent="handleSubmit">
             <p class="my-5 text-gray-700">
@@ -33,19 +34,31 @@
                 </a-form-item>
             </div>
             <a-form-item label="Foto (opcional)">
-                <a-upload
-                    list-type="picture-card"
-                    :file-list="fileList"
-                    :before-upload="beforeUpload"
-                    :on-preview="handlePreview"
-                    :on-remove="handleRemove"
-                    :max-count="1"
-                >
-                    <div v-if="fileList.length < 1">
-                        <plus-outlined />
-                        <div style="margin-top: 8px">Subir</div>
-                    </div>
-                </a-upload>
+                <div class="flex items-start gap-4">
+                    <a-upload
+                        list-type="picture-card"
+                        :file-list="fileList"
+                        :before-upload="beforeUpload"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :max-count="1"
+                    >
+                        <div v-if="fileList.length < 1">
+                            <plus-outlined />
+                            <div style="margin-top: 8px">Subir</div>
+                        </div>
+                    </a-upload>
+                    <a-input
+                        v-model:value="fotoDescripcion"
+                        placeholder="Descripción de la foto (opcional)"
+                        class="mt-2"
+                        style="
+                            min-width: 180px;
+                            max-width: 260px;
+                            align-self: flex-start;
+                        "
+                    />
+                </div>
                 <a-modal v-model:open="previewVisible" footer="null">
                     <img
                         :src="previewImage"
@@ -53,11 +66,6 @@
                         style="width: 100%"
                     />
                 </a-modal>
-                <a-input
-                    v-model:value="fotoDescripcion"
-                    placeholder="Descripción de la foto (opcional)"
-                    class="mt-2"
-                />
             </a-form-item>
             <a-form-item
                 label="Comentario o información adicional (opcional)"
@@ -217,10 +225,10 @@ async function handleSubmit() {
         formData.append("talla", form.value.talla);
         formData.append("comentario_madre", form.value.comentario_madre);
         if (fileList.value.length > 0) {
-            formData.append(
-                "foto",
-                fileList.value[0].originFileObj || fileList.value[0]
-            );
+            // Asegurarse de enviar el archivo real (File)
+            const fileToSend =
+                fileList.value[0].originFileObj || fileList.value[0];
+            formData.append("foto", fileToSend);
             formData.append("foto_descripcion", fotoDescripcion.value);
         }
         if (props.evaluacion && props.evaluacion.id) {

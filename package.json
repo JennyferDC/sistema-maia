@@ -21,6 +21,7 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
+        "@google/genai": "^1.9.0",
         "ant-design-vue": "^4.2.6"
     }
 }

@@ -11,6 +11,8 @@ class CreateEtapasDesarrolloTable extends Migration
         Schema::create('etapas_desarrollo', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_etapa');
+            $table->integer('mes_inicio')->default(0);
+            $table->integer('mes_fin')->default(0);
             $table->timestamps();
         });
     }

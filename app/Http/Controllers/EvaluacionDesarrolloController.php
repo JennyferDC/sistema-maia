@@ -65,10 +65,10 @@ class EvaluacionDesarrolloController extends Controller
 
         // Guardar foto si se envía
         if ($request->hasFile('foto')) {
-            $ruta = Storage::putFile('public/fotos_ninos/' . $nino->id, $request->file('foto'));
+            $ruta = $request->file('foto')->store('fotos_ninos', 'public');
             FotoNino::create([
-                'ruta_foto' => Storage::url($ruta),
-                'fecha_subida' => Carbon::now(),
+                'ruta_foto' => '/storage/' . $ruta,
+                'fecha_subida' => now(),
                 'descripcion' => $request->input('foto_descripcion'),
                 'nino_id' => $nino->id,
                 'etapa_desarrollo_id' => $data['etapa_desarrollo_id'],
@@ -95,21 +95,21 @@ class EvaluacionDesarrolloController extends Controller
 
         // Guardar o actualizar foto si se envía
         if ($request->hasFile('foto')) {
-            $ruta = Storage::putFile('public/fotos_ninos/' . $nino->id, $request->file('foto'));
+            $ruta = $request->file('foto')->store('fotos_ninos', 'public');
             // Buscar si ya existe una foto para este niño y etapa
             $foto = FotoNino::where('nino_id', $nino->id)
                 ->where('etapa_desarrollo_id', $data['etapa_desarrollo_id'])
                 ->first();
             if ($foto) {
                 $foto->update([
-                    'ruta_foto' => Storage::url($ruta),
-                    'fecha_subida' => Carbon::now(),
+                    'ruta_foto' => '/storage/' . $ruta,
+                    'fecha_subida' => now(),
                     'descripcion' => $request->input('foto_descripcion'),
                 ]);
             } else {
                 FotoNino::create([
-                    'ruta_foto' => Storage::url($ruta),
-                    'fecha_subida' => Carbon::now(),
+                    'ruta_foto' => '/storage/' . $ruta,
+                    'fecha_subida' => now(),
                     'descripcion' => $request->input('foto_descripcion'),
                     'nino_id' => $nino->id,
                     'etapa_desarrollo_id' => $data['etapa_desarrollo_id'],

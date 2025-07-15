@@ -44,8 +44,7 @@ class RegistroObservacionController extends Controller
 
         RegistroObservacionSalud::create($data);
 
-        return Redirect::route('ninos.registros_observacion.index', $nino)
-            ->with('success', 'Registro de observación guardado correctamente.');
+        return response()->json(['success' => true, 'message' => 'Registro de observación guardado correctamente.']);
     }
 
     public function destroy(Nino $nino, RegistroObservacionSalud $registro)
