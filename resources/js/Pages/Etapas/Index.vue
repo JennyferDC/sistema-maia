@@ -74,24 +74,24 @@
                         Sin hitos registrados
                     </span>
                 </div>
-
-                <ModalHitoLogrado
-                    :open="mostrarModal"
-                    :etapas="etapas"
-                    :hito="hitoSeleccionado"
-                    :nino-id="nino.id"
-                    @cancel="cerrarModal"
-                />
-                <ModalEvaluacionEtapa
-                    :open="mostrarModalEvaluacion"
-                    :etapa="etapaSeleccionada"
-                    :nino="nino"
-                    :evaluacion="evaluacionSeleccionada"
-                    @cancel="cerrarModalEvaluacion"
-                />
-            </div>
         </div>
-    </AppLayout>
+
+    </div>
+
+    <ModalHitoLogrado
+                :open="mostrarModal"
+                :etapas="etapas"
+                :hito="hitoSeleccionado"
+                :nino-id="nino.id"
+                @cancel="cerrarModal"
+            />
+            <ModalEvaluacionEtapa
+                :open="mostrarModalEvaluacion"
+                :etapa="etapaSeleccionada"
+                :nino="nino"
+                :evaluacion="evaluacionSeleccionada"
+                @cancel="cerrarModalEvaluacion"
+            />
 </template>
 
 <script setup>
@@ -171,11 +171,18 @@ console.log("Props recibidos en Etapas/Index.vue:", {
     nino: props.nino,
 });
 
+// ✅ Mostrar u ocultar panel flotante
+const togglePanel = (hito) => {
+  hito.mostrarPanel = hito.marcado;
+};
+
+// 🧠 Extraer solo nombre sin paréntesis
 const getNombre = (nombre_etapa) => {
     const idx = nombre_etapa.indexOf("(");
     return idx !== -1 ? nombre_etapa.slice(0, idx).trim() : nombre_etapa;
 };
 
+// 🧠 Extraer texto dentro del paréntesis
 const getRango = (nombre_etapa) => {
     const match = nombre_etapa.match(/\(([^)]+)\)/);
     return match ? match[1] : "";
