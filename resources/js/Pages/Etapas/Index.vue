@@ -1,95 +1,106 @@
 <template>
-    <div class="max-w-3xl mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-6">Hitos por Etapa de Desarrollo</h1>
-
-        <div v-for="etapa in etapas" :key="etapa.id" class="mb-8">
-            <div class="mb-2 flex items-center justify-between">
-                <div>
-                    <span class="text-lg font-semibold">{{
-                        getNombre(etapa.nombre_etapa)
-                    }}</span>
-                    <span class="text-gray-500 ml-2">{{
-                        getRango(etapa.nombre_etapa)
-                    }}</span>
-                </div>
-                <AButton
-                    class="ml-4"
-                    type="primary"
-                    @click="() => abrirModalEvaluacion(etapa)"
-                >
-                    Evaluación
-                </AButton>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <a-card
-                    v-for="hito in etapa.hitos"
-                    :key="hito.id"
-                    class="border border-gray-200 shadow-sm cursor-pointer"
-                    :bodyStyle="{ padding: '8px' }"
-                    @click="() => abrirModal(etapa, hito)"
-                >
-                    <div
-                        class="hito-checkbox-row"
-                        @click.stop="() => abrirModal(etapa, hito)"
-                    >
-                        <span
-                            class="custom-checkbox"
-                            :class="{ checked: hito.completado }"
-                        >
-                            <svg
-                                v-if="hito.completado"
-                                class="check-icon"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <circle cx="10" cy="10" r="9" fill="#22c55e" />
-                                <path
-                                    d="M6 10.5L9 13.5L14 8.5"
-                                    stroke="white"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
-                            </svg>
-                        </span>
-                        <span class="ml-4">{{ hito.nombre_hito }}</span>
+    <AppLayout :title="'Desarrollo del niño por hitos'">
+        <template #header>
+            <h1 class="text-xl font-semibold text-pink-800 mb-0">
+                Desarrollo del niño por hitos
+            </h1>
+        </template>
+        <div class="max-w-3xl mx-auto p-6">
+            <div v-for="etapa in etapas" :key="etapa.id" class="mb-8">
+                <div class="mb-2 flex items-center justify-between">
+                    <div>
+                        <span class="text-lg font-semibold">{{
+                            getNombre(etapa.nombre_etapa)
+                        }}</span>
+                        <span class="text-gray-500 ml-2">{{
+                            getRango(etapa.nombre_etapa)
+                        }}</span>
                     </div>
-                </a-card>
+                    <AButton
+                        class="ml-4"
+                        type="primary"
+                        @click="() => abrirModalEvaluacion(etapa)"
+                    >
+                        Evaluación
+                    </AButton>
+                </div>
 
-                <span
-                    v-if="!etapa.hitos.length"
-                    class="text-gray-400 col-span-full"
-                >
-                    Sin hitos registrados
-                </span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <a-card
+                        v-for="hito in etapa.hitos"
+                        :key="hito.id"
+                        class="border border-gray-200 shadow-sm cursor-pointer"
+                        :bodyStyle="{ padding: '8px' }"
+                        @click="() => abrirModal(etapa, hito)"
+                    >
+                        <div
+                            class="hito-checkbox-row"
+                            @click.stop="() => abrirModal(etapa, hito)"
+                        >
+                            <span
+                                class="custom-checkbox"
+                                :class="{ checked: hito.completado }"
+                            >
+                                <svg
+                                    v-if="hito.completado"
+                                    class="check-icon"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <circle
+                                        cx="10"
+                                        cy="10"
+                                        r="9"
+                                        fill="#22c55e"
+                                    />
+                                    <path
+                                        d="M6 10.5L9 13.5L14 8.5"
+                                        stroke="white"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </span>
+                            <span class="ml-4">{{ hito.nombre_hito }}</span>
+                        </div>
+                    </a-card>
+
+                    <span
+                        v-if="!etapa.hitos.length"
+                        class="text-gray-400 col-span-full"
+                    >
+                        Sin hitos registrados
+                    </span>
+                </div>
+
+                <ModalHitoLogrado
+                    :open="mostrarModal"
+                    :etapas="etapas"
+                    :hito="hitoSeleccionado"
+                    :nino-id="nino.id"
+                    @cancel="cerrarModal"
+                />
+                <ModalEvaluacionEtapa
+                    :open="mostrarModalEvaluacion"
+                    :etapa="etapaSeleccionada"
+                    :nino="nino"
+                    :evaluacion="evaluacionSeleccionada"
+                    @cancel="cerrarModalEvaluacion"
+                />
             </div>
-
-            <ModalHitoLogrado
-                :open="mostrarModal"
-                :etapas="etapas"
-                :hito="hitoSeleccionado"
-                :nino-id="nino.id"
-                @cancel="cerrarModal"
-            />
-            <ModalEvaluacionEtapa
-                :open="mostrarModalEvaluacion"
-                :etapa="etapaSeleccionada"
-                :nino="nino"
-                :evaluacion="evaluacionSeleccionada"
-                @cancel="cerrarModalEvaluacion"
-            />
         </div>
-    </div>
+    </AppLayout>
 </template>
 
 <script setup>
 import { Card as ACard, Button as AButton } from "ant-design-vue";
-import ModalHitoLogrado from "./ModalHitoLogrado.vue";
-import ModalEvaluacionEtapa from "./ModalEvaluacionEtapa.vue";
+import ModalHitoLogrado from "./componentes/ModalHitoLogrado.vue";
+import ModalEvaluacionEtapa from "./componentes/ModalEvaluacionEtapa.vue";
 import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
     etapas: {
@@ -180,15 +191,16 @@ const getRango = (nombre_etapa) => {
     border: 1.5px solid #e5e7eb;
     padding: 14px 18px;
     margin-bottom: 10px;
-    transition: box-shadow 0.25s, border-color 0.25s;
+    transition: box-shadow 0.25s, border-color 0.25s, background 0.25s;
     min-height: 64px;
     display: flex;
     align-items: center;
 }
 :deep(.ant-card):hover {
-    box-shadow: 0 4px 16px 0 rgba(34, 197, 94, 0.18),
+    box-shadow: 0 4px 16px 0 rgba(236, 72, 153, 0.18),
         0 3px 8px 0 rgba(0, 0, 0, 0.08);
-    border-color: #22c55e;
+    border-color: #ec4899;
+    background: #fdf2f8;
 }
 
 .hito-checkbox-row {

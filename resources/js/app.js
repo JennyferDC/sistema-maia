@@ -8,7 +8,7 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { ConfigProvider } from "ant-design-vue";
 
-const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+const appName = import.meta.env.VITE_APP_NAME || "MAIA";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -25,7 +25,7 @@ createInertiaApp({
                     {
                         theme: {
                             token: {
-                                colorPrimary: "#db2777", // bg-pink-600 Tailwind
+                                colorPrimary: "#db2777", // bg-pink-600 de Tailwind
                             },
                         },
                     },

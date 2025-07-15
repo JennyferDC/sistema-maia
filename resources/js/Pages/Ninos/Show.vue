@@ -1,7 +1,7 @@
 <template>
     <AppLayout :title="`Detalle de ${nino.nombre}`">
         <template #header>
-            <h1 class="text-3xl font-bold text-pink-800 mb-0">
+            <h1 class="text-xl font-semibold text-pink-800 mb-0">
                 Detalle del Bebé
             </h1>
         </template>

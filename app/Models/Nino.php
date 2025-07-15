@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Nino extends Model
 {
-    
+
     use HasFactory;
 
     protected $table = 'ninos';
@@ -21,7 +21,7 @@ class Nino extends Model
         'peso',
         'talla',
         'madre_id',
-        'etapa_desarrollo_id'
+        'etapa_desarrollo_id' // Etapa actual del niño
     ];
 
     // Relaciones

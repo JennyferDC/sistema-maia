@@ -1,7 +1,7 @@
 <template>
     <AppLayout title="Mis Bebés">
         <template #header>
-            <h1 class="text-3xl font-bold text-pink-800 mb-0">Mis Bebés</h1>
+            <h1 class="text-xl font-semibold text-pink-800 mb-0">Mis Bebés</h1>
         </template>
         <div class="p-6 md:p-10">
             <!-- ✅ Botones de selección de vista -->
@@ -81,12 +81,7 @@
                                     >Talla: {{ nino.talla_nacimiento }} cm</span
                                 >
                             </div>
-                            <div class="flex items-center">
-                                <UserOutlined
-                                    class="h-5 w-5 mr-2 text-pink-500"
-                                />
-                                <span>Madre: {{ nino.madre.name }}</span>
-                            </div>
+
                         </div>
                     </div>
 
@@ -127,7 +122,6 @@
                             <th class="px-6 py-3">Semana Nac.</th>
                             <th class="px-6 py-3">Peso (kg)</th>
                             <th class="px-6 py-3">Talla (cm)</th>
-                            <th class="px-6 py-3">Madre</th>
                             <th class="px-6 py-3">Etapa</th>
                             <th class="px-6 py-3 text-center">Acciones</th>
                         </tr>
@@ -150,7 +144,6 @@
                             <td class="px-6 py-4">
                                 {{ nino.talla_nacimiento }}
                             </td>
-                            <td class="px-6 py-4">{{ nino.madre.name }}</td>
                             <td class="px-6 py-4">
                                 <span
                                     class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs font-medium"
