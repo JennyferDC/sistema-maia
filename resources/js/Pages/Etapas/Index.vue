@@ -66,22 +66,24 @@
                 </span>
             </div>
 
-            <ModalHitoLogrado
-                :open="mostrarModal"
-                :etapas="etapas"
-                :hito="hitoSeleccionado"
-                :nino-id="nino.id"
-                @cancel="cerrarModal"
-            />
-            <ModalEvaluacionEtapa
-                :open="mostrarModalEvaluacion"
-                :etapa="etapaSeleccionada"
-                :nino="nino"
-                :evaluacion="evaluacionSeleccionada"
-                @cancel="cerrarModalEvaluacion"
-            />
         </div>
     </div>
+
+    <!-- ✅ Modales fuera del v-for para evitar duplicación -->
+    <ModalHitoLogrado
+        :open="mostrarModal"
+        :etapas="etapas"
+        :hito="hitoSeleccionado"
+        :nino-id="nino.id"
+        @cancel="cerrarModal"
+    />
+    <ModalEvaluacionEtapa
+        :open="mostrarModalEvaluacion"
+        :etapa="etapaSeleccionada"
+        :nino="nino"
+        :evaluacion="evaluacionSeleccionada"
+        @cancel="cerrarModalEvaluacion"
+    />
 </template>
 
 <script setup>

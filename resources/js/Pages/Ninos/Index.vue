@@ -53,9 +53,11 @@
                 <div class="p-6">
                     <!-- ✅ Encabezado tarjeta -->
                     <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-xl font-bold text-gray-800">
-                            {{ nino.nombre }}
-                        </h2>
+                      <h2 class="text-xl font-bold text-gray-800 flex items-center gap-1">
+                      {{ nino.nombre }}
+                      <StarOutlined class="text-yellow-500" />
+                      </h2>
+                        
                         <span
                             class="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium"
                         >
@@ -244,16 +246,20 @@
 import { Link, router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import {
-    PlusOutlined,
-    AppstoreOutlined,
-    TableOutlined,
-    ClockCircleOutlined,
-    ShoppingOutlined,
-    CalendarOutlined,
-    UserOutlined,
-    EyeOutlined,
-    EditOutlined,
-    DeleteOutlined,
+  PlusOutlined,
+  AppstoreOutlined,
+  TableOutlined,
+  ClockCircleOutlined,
+  ShoppingOutlined,
+  CalendarOutlined,
+  UserOutlined,
+  EyeOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  StarOutlined,
+  BulbOutlined,
+  MedicineBoxOutlined,
+  LaptopOutlined,
 } from "@ant-design/icons-vue";
 import { Button as AButton } from "ant-design-vue";
 import ModalDiagnosticoMedico from "./componentes/ModalDiagnosticoMedico.vue";
